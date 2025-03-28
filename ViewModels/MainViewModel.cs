@@ -39,23 +39,23 @@ namespace FlawDetector
 
                 for (int i = 0; i < values.Length; i++)
                 {
-                    y[i] = Convert.ToDouble(values[i]);//ошибка выход за пределы массива
-                    x[i] = Convert.ToDouble(i) / 100.0;
+                    y.Add(Convert.ToDouble(values[i]));//ошибка выход за пределы массива
+                    x.Add(Convert.ToDouble(i) / 100.0);
                 }
 
                 // load data into the lines
                 graf.Plot(x, y);
 
                 // add lines into the grid
-                //myGrid.Children.Clear();
-                //myGrid.Children.Add(graf);
+                myGrid.Children.Clear();
+                myGrid.Children.Add(graf);
 
                 //// customize styling
-                //myChart.Title = $"Line Plot ({pointCount:n0} points each)";
-                //myChart.BottomTitle = $"Horizontal Axis Label";
-                //myChart.LeftTitle = $"Vertical Axis Label";
-                //myChart.IsAutoFitEnabled = true;
-                //myChart.LegendVisibility = Visibility.Visible;
+                myChart.Title = $"Line Plot ({x:n0} points each)";
+                myChart.BottomTitle = $"Horizontal Axis Label";
+                myChart.LeftTitle = $"Vertical Axis Label";
+                myChart.IsAutoFitEnabled = true;
+                myChart.LegendVisibility = Visibility.Visible;
             }
         }
 
