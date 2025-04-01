@@ -1,6 +1,5 @@
-﻿using System;
+﻿using InteractiveDataDisplay.WPF;
 using System.Windows;
-using InteractiveDataDisplay.WPF;
 
 namespace FlawDetector
 {
@@ -8,7 +7,14 @@ namespace FlawDetector
     {
         public MainWindow()
         {
-
+            InitializeComponent();
+            DataContext = new MainViewModel(MainGraph);
+            //Loaded += MainWindow_Loaded;
         }
+
+        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    DataContext = new MainViewModel(MainGraph);
+        //}
     }
 }

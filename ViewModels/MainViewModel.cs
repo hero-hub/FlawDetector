@@ -1,64 +1,56 @@
 ﻿using InteractiveDataDisplay.WPF;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 
 namespace FlawDetector
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         private List<string> _dataFiles = new List<string>();
-
-        public MainViewModel()
+        private LineGraph _lineGraph;
+        
+        public MainViewModel(LineGraph lineGraph)
         {
+            _lineGraph = lineGraph;
             StartVisualization();
         }
 
-        private void StartVisualization()
+        private async Task StartVisualization()
         {
-            string directoryPath = @"D:\WORK\FlawDetector\signals";
-            _dataFiles = Directory.GetFiles(directoryPath, "*.txt").ToList();
-
-            List<double> x = new List<double>(); //Array.Empty<double>();
-            List<double> y = new List<double>(); //Array.Empty<double>();
-
-            // create the lines and describe their styling
-            var graf = new InteractiveDataDisplay.WPF.LineGraph
+            for (int i = 0; i < 1057; i++)
             {
-                Stroke = new SolidColorBrush(Colors.Blue),
-                Description = "Line A",
-                StrokeThickness = 2
-            };
+                string filePath = Path.Combine(@"D:\WORK\FlawDetector\signals\", $"{i}_CH-1_OnWr-2.txt");
+                string[] lines = File.ReadAllLines(filePath);
 
-            foreach( var line in _dataFiles)
-            {
-                string[] values = File.ReadAllLines(line);
-                //Array.Clear(x);
-                //Array.Clear(y);
+                double[] y = lines.Select(Convert.ToDouble).ToArray();
+                double[] x = Enumerable.Range(0, y.Length)
+                                      .Select(j => j / 100.0)
+                                      .ToArray();
 
-                for (int i = 0; i < values.Length; i++)
-                {
-                    y.Add(Convert.ToDouble(values[i]));//ошибка выход за пределы массива
-                    x.Add(Convert.ToDouble(i) / 100.0);
-                }
+                _lineGraph.Plot(x, y);
+                await Task.Delay(5);
 
-                // load data into the lines
-                graf.Plot(x, y);
-
-                // add lines into the grid
-                myGrid.Children.Clear();
-                myGrid.Children.Add(graf);
-
-                //// customize styling
-                myChart.Title = $"Line Plot ({x:n0} points each)";
-                myChart.BottomTitle = $"Horizontal Axis Label";
-                myChart.LeftTitle = $"Vertical Axis Label";
-                myChart.IsAutoFitEnabled = true;
-                myChart.LegendVisibility = Visibility.Visible;
+                //for (int j = 630; j < 831; j++)
+                //{
+                    
+                //}
             }
         }
 
+        //private void SearchFlaw()
+        //{
+        //    for (int i = 630; i < 831; i++)
+        //    {
+        //        if (y[i] > 7)
+        //        {
+        //            while (y[i++] > 7) 
+        //        }
+        //    }
+        //}
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
