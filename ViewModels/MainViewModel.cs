@@ -12,45 +12,59 @@ namespace FlawDetector
     {
         private List<string> _dataFiles = new List<string>();
         private LineGraph _lineGraph;
-        
+        private Dictionary<int, int> Flaws = new Dictionary<int, int>();
         public MainViewModel(LineGraph lineGraph)
         {
             _lineGraph = lineGraph;
-            StartVisualization();
+            Visualization();
+            SearchFlaw();
         }
+        public (double[] x, double[] y) TxtToArrays(string filePath)
+        {
+            string[] lines = File.ReadAllLines(filePath);
+            double[] y = lines.Select(Convert.ToDouble).ToArray();
+            double[] x = Enumerable.Range(0, y.Length).Select(i => i / 100.0).ToArray();
 
-        private async Task StartVisualization()
+            return (x, y);
+        }
+        private async Task Visualization()
         {
             for (int i = 0; i < 1057; i++)
             {
                 string filePath = Path.Combine(@"D:\WORK\FlawDetector\signals\", $"{i}_CH-1_OnWr-2.txt");
-                string[] lines = File.ReadAllLines(filePath);
+                var (x, y) = TxtToArrays(filePath);
 
-                double[] y = lines.Select(Convert.ToDouble).ToArray();
-                double[] x = Enumerable.Range(0, y.Length)
-                                      .Select(j => j / 100.0)
-                                      .ToArray();
+                if (x.Length > 0 && y.Length > 0)
+                {
+                    _lineGraph.Plot(x, y);
+                }
 
-                _lineGraph.Plot(x, y);
                 await Task.Delay(5);
-
-                //for (int j = 630; j < 831; j++)
-                //{
-                    
-                //}
             }
         }
 
-        //private void SearchFlaw()
-        //{
-        //    for (int i = 630; i < 831; i++)
-        //    {
-        //        if (y[i] > 7)
-        //        {
-        //            while (y[i++] > 7) 
-        //        }
-        //    }
-        //}
+        private void SearchFlaw()
+        {
+            int flawStart = 0;
+            int flawEnd = 0;
+            for (int i = 0; i < 1057; i++)
+            {
+                string filePath = Path.Combine(@"D:\WORK\FlawDetector\signals\", $"{i}_CH-1_OnWr-2.txt");
+                var (x, y) = TxtToArrays(filePath);
+
+                for (int j = 630; j < 831; j++)
+                {
+                    if (y[j] > 7)
+                    {   
+                        if (flawStart == 0) flawStart = i;
+                        flawEnd = i;
+                        break;
+                    }
+                }
+                
+                Flaws.Add(flawStart, flawEnd);
+            }
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
